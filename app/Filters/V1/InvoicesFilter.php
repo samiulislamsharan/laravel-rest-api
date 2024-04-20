@@ -2,23 +2,23 @@
 
 namespace App\Filters\V1;
 
-use App\Filter\ApiFilter;
+use App\Filters\ApiFilter;
 use Illuminate\Http\Request;
 
 class InvoicesFilter extends ApiFilter
 {
     protected $allowedParams = [
-        'name' => ['eq'],
-        'type' => ['eq'],
-        'email' => ['eq'],
-        'address' => ['eq'],
-        'city' => ['eq'],
-        'state' => ['eq'],
-        'postalCode' => ['eq', 'gt', 'lt'],
+        'customerId' => ['eq'],
+        'status' => ['eq', 'ne'],
+        'amount' => ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
+        'billedDate' => ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
+        'paidDate' => ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
     ];
 
     protected $columnMap = [
-        'postalCode' => 'postal_code',
+        'customerId' => 'customer_id',
+        'billedDate' => 'billed_date',
+        'paidDate' => 'paid_date',
     ];
 
     protected $operatorMap = [
@@ -27,28 +27,6 @@ class InvoicesFilter extends ApiFilter
         'gte' => '>=',
         'lt' => '<',
         'lte' => '<=',
+        'ne' => '!=',
     ];
-
-    public function transform(Request $request)
-    {
-        $eloquentQuery = [];
-
-        foreach ($this->allowedParams as $param => $operators) {
-            $query = $request->query($param);
-
-            if (!isset($query)) {
-                continue;
-            }
-
-            $column = $this->columnMap[$param] ?? $param;
-
-            foreach ($operators as $operator) {
-                if (isset($query[$operator])) {
-                    $eloquentQuery[] = [$column, $this->operatorMap[$operator], $query[$operator]];
-                }
-            }
-        }
-
-        return $eloquentQuery;
-    }
 }
