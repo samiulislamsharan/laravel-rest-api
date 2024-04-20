@@ -2,7 +2,7 @@
 
 namespace App\Filters\V1;
 
-use App\Filter\ApiFilter;
+use App\Filters\ApiFilter;
 use Illuminate\Http\Request;
 
 class CustomersFilter extends ApiFilter
@@ -28,27 +28,4 @@ class CustomersFilter extends ApiFilter
         'lt' => '<',
         'lte' => '<=',
     ];
-
-    public function transform(Request $request)
-    {
-        $eloquentQuery = [];
-
-        foreach ($this->allowedParams as $param => $operators) {
-            $query = $request->query($param);
-
-            if (!isset($query)) {
-                continue;
-            }
-
-            $column = $this->columnMap[$param] ?? $param;
-
-            foreach ($operators as $operator) {
-                if (isset($query[$operator])) {
-                    $eloquentQuery[] = [$column, $this->operatorMap[$operator], $query[$operator]];
-                }
-            }
-        }
-
-        return $eloquentQuery;
-    }
 }
