@@ -11,14 +11,13 @@ use App\Http\Requests\V1\StoreInvoiceRequest;
 use App\Http\Requests\V1\UpdateInvoiceRequest;
 use App\Http\Resources\V1\InvoiceResource;
 use App\Http\Resources\V1\InvoiceCollection;
-use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+
     public function index(Request $request)
     {
         $filter = new InvoicesFilter();
