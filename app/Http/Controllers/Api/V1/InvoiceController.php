@@ -61,17 +61,26 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // create one or more invoices
+
+        $invoices = collect($request->all())->map(function ($arr, $key) {
+            return Arr::except($arr, ['customerId', 'billedDate', 'paidDate']);
+        });
+
+        Invoice::insert($invoices->toArray());
+
+        return response()->json(['message' => 'Invoices created successfully'], 201);
     }
 
     public function bulkStore(BulkStoreInvoiceRequest $request)
     {
-        $bulk= collect($request->all())->map(function($arr, $key)
-        {
+        $bulk = collect($request->all())->map(function ($arr, $key) {
             return Arr::except($arr, ['customerId', 'billedDate', 'paidDate']);
         });
 
         Invoice::insert($bulk->toArray());
+
+        return response()->json(['message' => 'Invoice(s) inserted successfully'], 201);
     }
 
     /**
@@ -103,6 +112,6 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice)
     {
-        //
+        $invoice->delete();
     }
 }
