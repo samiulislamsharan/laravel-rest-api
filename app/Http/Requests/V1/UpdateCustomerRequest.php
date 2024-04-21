@@ -3,6 +3,7 @@
 namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCustomerRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,37 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        $method = $this->method();
+
+        if ($method == 'PUT') {
+            return [
+                'name' => ['required', 'string', 'max:255'],
+                'type' => ['required', Rule::in(['I', 'B', 'i', 'b'])],
+                'email' => ['required', 'email', 'max:255'],
+                'address' => ['required', 'string', 'max:255'],
+                'city' => ['required', 'string', 'max:255'],
+                'state' => ['required', 'string', 'max:255'],
+                'postalCode' => ['required', 'string', 'max:255'],
+            ];
+        } else {
+            return [
+                'name' => ['sometimes', 'required', 'string', 'max:255'],
+                'type' => ['sometimes', 'required', Rule::in(['I', 'B', 'i', 'b'])],
+                'email' => ['sometimes', 'required', 'email', 'max:255'],
+                'address' => ['sometimes', 'required', 'string', 'max:255'],
+                'city' => ['sometimes', 'required', 'string', 'max:255'],
+                'state' => ['sometimes', 'required', 'string', 'max:255'],
+                'postalCode' => ['sometimes', 'required', 'string', 'max:255'],
+            ];
+        }
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->postalCode) {
+            $this->merge([
+                'postal_code' => $this->postalCode
+            ]);
+        }
     }
 }
